@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    private $userRepository, $reviewRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository, ReviewRepositoryInterface $reviewRepository){
+        $this->userRepository = $userRepository;
+        $this->reviewRepository = $reviewRepository;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -22,19 +28,7 @@ class ReviewController extends Controller
 
         try{
             if (Auth::check()) { //C'est inutile car le path est déjà dans le middleware auth:sanctum mais au cas où quelqu'un ferait des modification au paths et oublierait de les remettre dans le middleware.
-                $user = auth()->user();
-
-                $reviews = DB::table('reviews')->where('user_id', $user->id)->get();
-
-                $isReviewOnAnEquipmentAlreadyReviewed = false;
-
-                foreach($reviews as $review){
-                    $rental = findOrFail($review->equipmentId);
-
-                    if($request->query('equipmentId') == $rental->id){
-                        $isReviewOnAnEquipmentAlreadyReviewed = true;
-                    }
-                }
+                $isReviewOnAnEquipmentAlreadyReviewed = $userRepository->hasUserAlreadyReviewedEquipment($request->query('equipmentId'));
 
                 if($isReviewOnAnEquipmentAlreadyReviewed){
                     abort(INVALID_DATA, "USER_ALREADY_REVIEWED_THAT_EQUIPMENT");
