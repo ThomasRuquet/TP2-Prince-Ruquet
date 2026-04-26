@@ -7,6 +7,7 @@ use App\Repository\Eloquent\BaseRepository;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -15,21 +16,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         parent::__construct($model);
     }
 
-    public function hasUserAlreadyReviewedEquipment(int $equipmentId){
-        $user = auth()->user();
-
-        $reviews = DB::table('reviews')->where('user_id', $user->id)->get();
-
-        $isReviewOnAnEquipmentAlreadyReviewed = false;
-
-        foreach($reviews as $review){
-            $rental = findOrFail($equipmentId);
-
-            if($equipmentId == $rental->id){
-                $isReviewOnAnEquipmentAlreadyReviewed = true;
-            }
-        }
-
-        return $isReviewOnAnEquipmentAlreadyReviewed;
+    public function hasUserAlreadyReviewedEquipment(int $rentalId){
+        return DB::table('reviews')
+            ->join('rentals', 'reviews.rental_id', '=', 'rentals.id') //https://laravel.com/docs/12.x/queries#inner-join-clause
+            ->where('reviews.user_id', auth::user()->id)
+            ->where('rentals.equipment_id', $rentalId)
+            ->exists();
     }
 }

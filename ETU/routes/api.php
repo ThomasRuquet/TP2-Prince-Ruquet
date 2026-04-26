@@ -11,6 +11,7 @@ Route::middleware('throttle:5,1')->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'throttle:5,1'])->group(function () {
+    Route::post('/createReview', 'App\Http\Controllers\ReviewController@store');
     Route::get('/me', 'App\Http\Controllers\AuthController@me');
     Route::post('/refresh', 'App\Http\Controllers\AuthController@refresh');
     Route::post('/signout', 'App\Http\Controllers\AuthController@logout');

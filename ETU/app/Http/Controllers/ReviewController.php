@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Repository\UserRepositoryInterface;
+use App\Repository\ReviewRepositoryInterface;
+use App\Http\Requests\CreateReviewRequest;
+use App\Http\Requests\StoreReviewRequest;
 
 class ReviewController extends Controller
 {
@@ -22,27 +28,23 @@ class ReviewController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreReviewRequest $request)
     {
-        //TODO: review request validation
-
         try{
-            if (Auth::check()) { //C'est inutile car le path est déjà dans le middleware auth:sanctum mais au cas où quelqu'un ferait des modification au paths et oublierait de les remettre dans le middleware.
-                $isReviewOnAnEquipmentAlreadyReviewed = $userRepository->hasUserAlreadyReviewedEquipment($request->query('equipmentId'));
+            $isReviewOnAnEquipmentAlreadyReviewed = $this->userRepository->hasUserAlreadyReviewedEquipment($request->input('rental_id'));
 
-                if($isReviewOnAnEquipmentAlreadyReviewed){
-                    abort(INVALID_DATA, "USER_ALREADY_REVIEWED_THAT_EQUIPMENT");
-                }
-
-                $review = Review::create($request);
-
-                return ($review)->response()->setStatusCode(201);
+            if($isReviewOnAnEquipmentAlreadyReviewed){
+                abort(INVALID_DATA, "USER_ALREADY_REVIEWED_THAT_EQUIPMENT");
             }
-            else{
-                abort(UNAUTHORISED, "USER_NOT_AUTHENTICATED");
-            }
+
+            $review = $this->reviewRepository->create([...$request->validated(), 'user_id' => auth()->id()]);
+
+            return response()->json($review, 201);
         }
-        catch(Exception $ex){
+        catch (ValidationException $ex) {
+            abort(INVALID_DATA, "la_validation_ne_passe_pas");
+        }
+        catch (Exception $ex) {
             abort(SERVER_ERROR, "server_error");
         }
     }

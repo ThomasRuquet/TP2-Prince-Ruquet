@@ -48,7 +48,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
-            User::create($request->validated());
+            User::create([...$request->all(), 'role_id' => 1]);
 
             return response()->json([
                 'message' => 'User registered successfully'

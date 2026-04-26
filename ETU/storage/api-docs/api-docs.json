@@ -66,7 +66,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Utilisateur inscrit",
+                        "description": "Utilisateur inscrit (throttling: 5 requêtes par minute)",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -96,7 +96,7 @@
                     "Auth"
                 ],
                 "summary": "Connexion utilisateur",
-                "description": "Authentifie un utilisateur.",
+                "description": "Authentifie un utilisateur. Throttling: 5 requêtes par minute.",
                 "operationId": "b5cee56757c3c79c5b5f115fdc33f460",
                 "requestBody": {
                     "required": true,
@@ -159,7 +159,7 @@
                 "operationId": "b46f8611fc7d1123f2a3d573cee661c4",
                 "responses": {
                     "200": {
-                        "description": "Déconnexion réussie",
+                        "description": "Déconnexion réussie. Throttling: 5 requêtes par minute",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -194,7 +194,7 @@
                     "Auth"
                 ],
                 "summary": "Rafraîchir le token",
-                "description": "Supprime le token actuel et en génère un nouveau",
+                "description": "Supprime le token actuel et en génère un nouveau. Throttling: 5 requêtes par minute.",
                 "operationId": "2c27d311a2876560fcb5a754b556cdc5",
                 "responses": {
                     "200": {
@@ -233,7 +233,7 @@
                     "Auth"
                 ],
                 "summary": "Profil utilisateur connecté",
-                "description": "Retourne les informations de l'utilisateur authentifié.",
+                "description": "Retourne les informations de l'utilisateur authentifié. Throttling: 5 requêtes par minute.",
                 "operationId": "9d9bc556f927575aa492a88c28fe5908",
                 "responses": {
                     "200": {
@@ -251,6 +251,10 @@
                                                 "name": {
                                                     "type": "string",
                                                     "example": "Exemple User"
+                                                },
+                                                "login": {
+                                                    "type": "string",
+                                                    "example": "UserExample"
                                                 },
                                                 "email": {
                                                     "type": "string",
