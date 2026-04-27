@@ -16,5 +16,6 @@ Route::middleware(['auth:sanctum', 'throttle:5,1'])->group(function () {
     Route::get('/me', 'App\Http\Controllers\AuthController@me');
     Route::post('/refresh', 'App\Http\Controllers\AuthController@refresh');
     Route::post('/signout', 'App\Http\Controllers\AuthController@logout');
-    Route::post('/locations', 'App\Http\Controllers\UserRentalController@getActiveRentals');
+    Route::get('/locations', 'App\Http\Controllers\UserRentalController@getActiveRentals');
+    Route::patch('/updatePassword', 'App\Http\Controllers\UserController@updatePassword');
 });
