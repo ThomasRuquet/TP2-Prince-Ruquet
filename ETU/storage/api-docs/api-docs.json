@@ -6,7 +6,7 @@
     },
     "servers": [
         {
-            "url": "/",
+            "url": "http://localhost:8000",
             "description": "Serveur local"
         }
     ],
@@ -29,6 +29,7 @@
                                     "last_name",
                                     "login",
                                     "email",
+                                    "role_id",
                                     "password"
                                 ],
                                 "properties": {
@@ -53,6 +54,10 @@
                                         "format": "email",
                                         "example": "user@example.com"
                                     },
+                                    "role_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
                                     "password": {
                                         "type": "string",
                                         "format": "password",
@@ -66,7 +71,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Utilisateur inscrit",
+                        "description": "Utilisateur inscrit (throttling: 5 requêtes par minute)",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -96,7 +101,7 @@
                     "Auth"
                 ],
                 "summary": "Connexion utilisateur",
-                "description": "Authentifie un utilisateur.",
+                "description": "Authentifie un utilisateur. Throttling: 5 requêtes par minute.",
                 "operationId": "b5cee56757c3c79c5b5f115fdc33f460",
                 "requestBody": {
                     "required": true,
@@ -159,7 +164,7 @@
                 "operationId": "b46f8611fc7d1123f2a3d573cee661c4",
                 "responses": {
                     "200": {
-                        "description": "Déconnexion réussie",
+                        "description": "Déconnexion réussie. Throttling: 5 requêtes par minute",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -194,7 +199,7 @@
                     "Auth"
                 ],
                 "summary": "Rafraîchir le token",
-                "description": "Supprime le token actuel et en génère un nouveau",
+                "description": "Supprime le token actuel et en génère un nouveau. Throttling: 5 requêtes par minute.",
                 "operationId": "2c27d311a2876560fcb5a754b556cdc5",
                 "responses": {
                     "200": {
@@ -233,7 +238,7 @@
                     "Auth"
                 ],
                 "summary": "Profil utilisateur connecté",
-                "description": "Retourne les informations de l'utilisateur authentifié.",
+                "description": "Retourne les informations de l'utilisateur authentifié. Throttling: 5 requêtes par minute.",
                 "operationId": "9d9bc556f927575aa492a88c28fe5908",
                 "responses": {
                     "200": {
@@ -251,6 +256,10 @@
                                                 "name": {
                                                     "type": "string",
                                                     "example": "Exemple User"
+                                                },
+                                                "login": {
+                                                    "type": "string",
+                                                    "example": "UserExample"
                                                 },
                                                 "email": {
                                                     "type": "string",
@@ -279,6 +288,249 @@
                     }
                 ]
             }
+        },
+        "/api/equipment": {
+            "post": {
+                "tags": [
+                    "Equipment"
+                ],
+                "summary": "Créer un équipement",
+                "description": "Crée un nouvel équipement",
+                "operationId": "28c5d8c51afa89bb5b58cafcb6ce6020",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "daily_price",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "test name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "test description"
+                                    },
+                                    "daily_price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 12.5
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Équipement créé",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "example": "test name"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "test description"
+                                        },
+                                        "dailyPrice": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 12.5
+                                        },
+                                        "category_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/equipment/{id}": {
+            "put": {
+                "tags": [
+                    "Equipment"
+                ],
+                "summary": "Modifier un équipement",
+                "description": "Met à jour un équipement existant",
+                "operationId": "eeb16faf22a74b63460867278b61644e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de l'équipement",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "daily_price",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "test name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "test description"
+                                    },
+                                    "daily_price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 15
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Équipement mis à jour",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "example": "test name"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "test description"
+                                        },
+                                        "dailyPrice": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 15
+                                        },
+                                        "category_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    },
+                    "404": {
+                        "description": "Équipement introuvable"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Equipment"
+                ],
+                "summary": "Supprimer un équipement",
+                "description": "Supprime un équipement existant",
+                "operationId": "9337ff7b74f071a99d2d2ea81f4617e4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Identifiant de l'équipement",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Équipement supprimé"
+                    },
+                    "401": {
+                        "description": "Non authentifié"
+                    },
+                    "403": {
+                        "description": "Accès refusé"
+                    },
+                    "404": {
+                        "description": "Équipement introuvable"
+                    },
+                    "500": {
+                        "description": "Erreur serveur"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -295,6 +547,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Equipment",
+            "description": "Equipment"
         }
     ]
 }
