@@ -7,4 +7,5 @@ use App\Repository\RepositoryInterface;
 interface UserRepositoryInterface extends RepositoryInterface
 {
     public function hasUserAlreadyReviewedEquipment(int $equipmentId);
+    public function updateUserPassword(string $password);
 }

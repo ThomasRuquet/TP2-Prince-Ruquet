@@ -23,4 +23,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             ->where('rentals.equipment_id', $rentalId)
             ->exists();
     }
+
+    public function updateUserPassword(string $password){
+        $user = auth()->user();
+        $user->update(['password' => bcrypt($password)]);
+    }
 }
