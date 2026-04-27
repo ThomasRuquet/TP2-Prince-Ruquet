@@ -28,6 +28,7 @@ class RegisterRequest extends FormRequest
             'phone' => 'string|max:13',
             'login' => 'required|unique:users',
             'email' => 'required|email|unique:users',
+            'role_id' => 'required|integer|exists:roles,id',
             'password' => [
                 'required',
                 //https://medium.com/@muhammad-sanan/validating-complex-passwords-with-laravel-955e128545f1

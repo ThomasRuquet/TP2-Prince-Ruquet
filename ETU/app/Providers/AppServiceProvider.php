@@ -9,6 +9,8 @@ use App\Repository\ReviewRepositoryInterface;
 use App\Repository\Eloquent\ReviewRepository;
 use App\Repository\RentalRepositoryInterface;
 use App\Repository\Eloquent\RentalRepository;
+use App\Repository\EquipmentRepositoryInterface;
+use App\Repository\Eloquent\EquipmentRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(ReviewRepositoryInterface::class, ReviewRepository::class);
         $this->app->bind(RentalRepositoryInterface::class, RentalRepository::class);
+        $this->app->bind(EquipmentRepositoryInterface::class, EquipmentRepository::class);
     }
 
     /**
