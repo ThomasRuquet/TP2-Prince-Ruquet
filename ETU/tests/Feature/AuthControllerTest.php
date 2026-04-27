@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -13,12 +14,15 @@ class AuthControllerTest extends TestCase
 
     public function test_register_creates_user()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $data = [
             'first_name' => 'test',
             'last_name' => 'test',
             'email' => 'test@example.com',
             'password' => 'Password123',
-            'login' => 'test'
+            'login' => 'test',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
@@ -39,75 +43,89 @@ class AuthControllerTest extends TestCase
         $this->assertNotNull($user);
         //https://stackoverflow.com/questions/35715755/how-to-compare-two-encryptedbcrypt-password-in-laravel
         $this->assertTrue(Hash::check('Password123', $user->password));
-        $response->assertStatus(201);
+        $response->assertStatus(CREATED);
     }
 
     public function test_register_fails_with_invalid_first_name()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $data = [
             'first_name' => '',
             'last_name' => 'test',
             'email' => 'test@example.com',
             'password' => 'testtest123',
-            'login' => '124'
+            'login' => '124',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(INVALID_DATA);
         $response->assertJsonValidationErrors(['first_name']);
     }
 
     public function test_register_fails_with_invalid_email()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $data = [
             'first_name' => 'test',
             'last_name' => 'test',
             'email' => 'testInvalid',
             'password' => 'testtest123',
-            'login' => '124'
+            'login' => '124',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(INVALID_DATA);
         $response->assertJsonValidationErrors(['email']);
     }
 
     public function test_register_fails_with_invalid_password()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $data = [
             'first_name' => 'test',
             'last_name' => 'test',
             'email' => 'test@example.com',
             'password' => 'test',
-            'login' => '124'
+            'login' => '124',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(INVALID_DATA);
         $response->assertJsonValidationErrors(['password']);
     }
 
     public function test_register_fails_with_invalid_last_name()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $data = [
             'first_name' => 'test',
             'last_name' => '',
             'email' => 'test@example.com',
             'password' => 'testtest123',
-            'login' => '124'
+            'login' => '124',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(INVALID_DATA);
         $response->assertJsonValidationErrors(['last_name']);
     }
 
     public function test_register_fails_with_a_duplicate_login()
     {
+        $adminRole = Role::create(['name' => 'admin']);
+
         $existingUser = User::factory()->create([
             'login' => 'test'
         ]);
@@ -117,17 +135,20 @@ class AuthControllerTest extends TestCase
             'last_name' => 'test',
             'email' => 'test@example.com',
             'password' => 'testtest123',
-            'login' => 'test'
+            'login' => 'test',
+            'role_id' => $adminRole->id,
         ];
 
         $response = $this->postJson('/api/signup', $data);
 
-        $response->assertStatus(422);
+        $response->assertStatus(INVALID_DATA);
         $response->assertJsonValidationErrors(['login']);
     }
 
     public function test_login_returns_token()
     {
+        Role::create(['name' => 'admin']);
+
         $user = User::factory()->create([
             'password' => 'Password123'
         ]);
@@ -139,13 +160,15 @@ class AuthControllerTest extends TestCase
 
         $response = $this->postJson('/api/signin', $data);
 
-        $response->assertStatus(200);
+        $response->assertStatus(OK);
         $response->assertJsonStructure([
             'access_token',
         ]);
     }
     public function test_login_fails_with_invalid_password()
     {
+        Role::create(['name' => 'admin']);
+
         $user = User::factory()->create([
             'password' => 'Password123',
             'login' => 'test'
@@ -158,13 +181,15 @@ class AuthControllerTest extends TestCase
 
         $response = $this->postJson('/api/signin', $data);
 
-        $response->assertStatus(401);
+        $response->assertStatus(UNAUTHORIZED);
         $response->assertJson([
             'message' => 'Invalid credentials',
         ]);
     }
     public function test_login_fails_with_invalid_login()
     {
+        Role::create(['name' => 'admin']);
+
         $user = User::factory()->create([
             'password' => 'Password123',
             'login' => 'test'
@@ -185,6 +210,8 @@ class AuthControllerTest extends TestCase
 
     public function test_logout_revokes_token()
     {
+        Role::create(['name' => 'admin']);
+
         $user = User::factory()->create([
             'password' => 'Password123',
             'login' => 'test'
@@ -197,7 +224,7 @@ class AuthControllerTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/signout');
 
-        $response->assertStatus(200);
+        $response->assertStatus(OK);
         $response->assertJson([
             'message' => 'Logged out successfully',
         ]);
@@ -213,7 +240,7 @@ class AuthControllerTest extends TestCase
             'Authorization' => 'Bearer invalidtoken',
         ])->postJson('/api/signout');
 
-        $response->assertStatus(401);
+        $response->assertStatus(UNAUTHORIZED);
         $response->assertJson([
             'message' => 'Unauthenticated.',
         ]);
