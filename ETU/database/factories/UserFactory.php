@@ -47,7 +47,8 @@ class UserFactory extends Factory
         ]);
     }
 
-    //https://laravel.com/docs/12.x/eloquent-factories 
+    //https://laravel.com/docs/12.x/eloquent-factories + copilote
+
     public function admin(): static
     {
         return $this->state(fn(array $attributes) => [
