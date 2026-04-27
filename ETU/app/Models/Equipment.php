@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Category;
 use App\Models\Sport;
@@ -9,6 +10,8 @@ use App\Models\Rental;
 
 class Equipment extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'description',

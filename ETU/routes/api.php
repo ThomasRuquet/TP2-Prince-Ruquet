@@ -17,7 +17,7 @@ Route::middleware(['auth:sanctum', 'throttle:5,1'])->group(function () {
     Route::post('/signout', 'App\Http\Controllers\AuthController@logout');
 });
 
-Route::middleware(['auth:sanctum', EnsureUserIsAdmin::class, 'throttle:10,1'])->group(function () {
+Route::middleware(['auth:sanctum', EnsureUserIsAdmin::class, 'throttle:60,1'])->group(function () {
     Route::post('equipment', 'App\Http\Controllers\EquipmentController@store');
     Route::put('equipment/{id}', 'App\Http\Controllers\EquipmentController@update');
     Route::delete('equipment/{id}', 'App\Http\Controllers\EquipmentController@destroy');
