@@ -14,7 +14,7 @@ define("SERVER_ERROR", 500);
 define("SONGS_PAGINATION", 10);
 
 #[OA\Info(title: "API Auth", version: "1.0")]
-#[OA\Server(url: "http://localhost:8000", description: "Serveur local")]
+#[OA\Server(url: "https://ouch-reach-jet.ngrok-free.dev/", description: "Serveur publique")] //j'ai utillisé un AI pour le déploiement
 //https://swagger.io/docs/specification/v3_0/authentication/bearer-authentication/
 #[OA\SecurityScheme(
     securityScheme: "bearerAuth",

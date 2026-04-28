@@ -11,6 +11,8 @@ use App\Repository\RentalRepositoryInterface;
 use App\Repository\Eloquent\RentalRepository;
 use App\Repository\EquipmentRepositoryInterface;
 use App\Repository\Eloquent\EquipmentRepository;
+use Illuminate\Support\Facades\URL;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (str_contains(config('app.url'), 'https://')) { //CHATGPT
+            URL::forceScheme('https');
+        }
+
     }
 }
