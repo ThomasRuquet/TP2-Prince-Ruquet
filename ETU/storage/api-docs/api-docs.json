@@ -531,6 +531,133 @@
                     }
                 ]
             }
+        },
+        "/api/createReview": {
+            "post": {
+                "tags": [
+                    "ReviewController"
+                ],
+                "summary": "Créer une review (throddling de 5 par minute)",
+                "operationId": "54f53435edafd2d607504bc2ebc4c49f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rating",
+                                    "userId",
+                                    "rentalId"
+                                ],
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "yo!"
+                                    },
+                                    "userId": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "rentalId": {
+                                        "type": "integer",
+                                        "example": "3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "review créée"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/updatePassword": {
+            "patch": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "update un password (throddling de 5 par minute)",
+                "operationId": "e03289818cdde5c20a2e840169824a54",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "old_password",
+                                    "new_password"
+                                ],
+                                "properties": {
+                                    "old_password": {
+                                        "type": "string",
+                                        "example": "password1234"
+                                    },
+                                    "new_password": {
+                                        "type": "string",
+                                        "example": "new_passW0rD"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mot de passe mis à jour"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/locations": {
+            "get": {
+                "tags": [
+                    "UserRentalController"
+                ],
+                "summary": "shows all active locations of user (throddling de 5 par minute)",
+                "description": "Display a listing of the resource.",
+                "operationId": "e383c4c8ff95d2aaf4395ff024b779ae",
+                "responses": {
+                    "200": {
+                        "description": "les locations ont été retournées avec succès"
+                    },
+                    "401": {
+                        "description": "l'utilisateur n'est pas connecté"
+                    },
+                    "422": {
+                        "description": "Données invalides"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -551,6 +678,18 @@
         {
             "name": "Equipment",
             "description": "Equipment"
+        },
+        {
+            "name": "ReviewController",
+            "description": "ReviewController"
+        },
+        {
+            "name": "UserController",
+            "description": "UserController"
+        },
+        {
+            "name": "UserRentalController",
+            "description": "UserRentalController"
         }
     ]
 }
