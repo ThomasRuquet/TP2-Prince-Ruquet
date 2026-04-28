@@ -19,8 +19,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function hasUserAlreadyReviewedEquipment(int $rentalId){
         return DB::table('reviews')
             ->join('rentals', 'reviews.rental_id', '=', 'rentals.id') //https://laravel.com/docs/12.x/queries#inner-join-clause
-            ->where('reviews.user_id', auth::user()->id)
+            ->where('reviews.user_id', Auth::user()->id)
             ->where('rentals.equipment_id', $rentalId)
             ->exists();
+    }
+
+    public function updateUserPassword(string $password){
+        $user = Auth::user();
+        $user->update(['password' => bcrypt($password)]);
+        return $user;
     }
 }
