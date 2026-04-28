@@ -7,6 +7,7 @@ use App\Repository\UserRepositoryInterface;
 use App\Http\Requests\UpdatePasswordRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use OpenApi\Attributes as OA;
 
 class UserController extends Controller
 {
@@ -16,9 +17,32 @@ class UserController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    #[OA\Patch(
+        path: "/api/updatePassword",
+        summary: "update un password (throddling de 5 par minute)",
+        tags: ["UserController"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: [
+                new OA\JsonContent(
+                    required: ["old_password", "new_password"],
+                    properties: [
+                        new OA\Property(property: "old_password", type: "string", example: "password1234"),
+                        new OA\Property(property: "new_password", type: "string", example: "new_passW0rD"),
+                ]
+                )
+            ]
+        ),
+        responses: [
+            new OA\Response(
+                response: 200, description: "Mot de passe mis à jour"
+            ),
+            new OA\Response(
+                response: "422", description: "Données invalides"
+            )
+        ]
+    )]
     public function updatePassword(UpdatePasswordRequest $request)
     {
         try{

@@ -9,6 +9,7 @@ use App\Repository\UserRepositoryInterface;
 use App\Repository\ReviewRepositoryInterface;
 use App\Http\Requests\CreateReviewRequest;
 use App\Http\Requests\StoreReviewRequest;
+use OpenApi\Attributes as OA;
 
 class ReviewController extends Controller
 {
@@ -18,16 +19,35 @@ class ReviewController extends Controller
         $this->userRepository = $userRepository;
         $this->reviewRepository = $reviewRepository;
     }
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[OA\Post(
+        path: "/api/createReview",
+        summary: "Créer une review (throddling de 5 par minute)",
+        tags: ["ReviewController"],
+        security: [["bearerAuth" => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: [
+                new OA\JsonContent(
+                    required: ["rating", "userId", "rentalId"],
+                    properties: [
+                        new OA\Property(property: "rating", type: "integer", example: 4),
+                        new OA\Property(property: "comment", type: "string", example: "yo!"),
+                        new OA\Property(property: "userId", type: "integer", example: "2"),
+                        new OA\Property(property: "rentalId", type: "integer", example: "3")
+                ]
+                )
+            ]
+        ),
+        responses: [
+            new OA\Response(
+                response: "201", description: "review créée"
+            ),
+            new OA\Response(
+                response: "422", description: "Données invalides"
+            )
+        ]
+    )]
     public function store(StoreReviewRequest $request)
     {
         try{
@@ -49,27 +69,4 @@ class ReviewController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
